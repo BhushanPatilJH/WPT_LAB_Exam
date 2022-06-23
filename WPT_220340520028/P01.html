@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>WPT_Q01</title>
+    <script src="jquery-3.5.1.min.js"></script>
+    </script>
+
+    <script>
+        $(()=>{
+            console.log("dom loaded");
+
+            
+            function showContent(){
+                let content="";
+                let ajaxparams={
+                    data:{},
+                    url:'http://localhost:8081/showcontent',
+                    type:'get',
+                    dataType:'json',
+                    success:(output)=>{
+                        for(let i=0; i<output.length;i++){
+                            content +="bookid :"+output[i].bookid+"   ,  book name: "+output[i].bookname+"   ,  book price "+output[i].price+"<br>";
+                        }
+                        $("#message").html(content);
+                    },
+                    error:(err)=>{console.log("error "+err)}
+
+                }
+
+                $.ajax(ajaxparams);
+
+
+            }
+
+
+            $("#bookid").blur(()=>{
+                console.log("blur click");
+                let input={bookid:$("#bookid").val()}
+
+                let ajaxparams={
+                    data:input,
+                    url:'http://localhost:8081/blurevent',
+                    type:'get',
+                    dataType:'json',
+                    success:(output)=>{
+                        console.log("success "+output)
+                        if(output.status){
+                            $("#mssg").html("Bookid is found");
+                            $("#bookname").val(output.bookDetail.bookname);
+                            $("#bookprice").val(output.bookDetail.price);
+                        }else{
+                            $("#mssg").html("Bookid is not found");
+                            $("#bookname").val("");
+                            $("#bookprice").val("");
+
+                        }
+                
+
+                    },
+                    error:(err)=>{console.log("error "+err)}
+
+                }
+
+                $.ajax(ajaxparams);
+                
+
+            })
+
+            $("#update").click(()=>{
+                console.log("update click");
+                let input={bookid:$("#bookid").val(), price:$("#bookprice").val()}
+                let ajaxparams={
+                    data:input,
+                    url:'http://localhost:8081/updatecontent',
+                    type:'get',
+                    dataType:'json',
+                    success:(output)=>{
+                        console.log("success "+output)
+                        if(output.status){
+                            $("#mssg").html("updated successfully");
+                        }else{
+                            $("#mssg").html("book info not found database");
+                        }
+                
+
+                    },
+                    error:(err)=>{console.log("error "+err)}
+
+                }
+
+                $.ajax(ajaxparams);
+
+                showContent();
+        
+
+
+
+            })
+
+        })
+
+    </script>
+
+</head>
+
+<body>
+    <pre>
+        <span>Book id   :</span><input type="number" placeholder="Enter the book id" id="bookid" ><span id="mssg">message</span><br>
+        <span>Book name :</span><input type="text" placeholder="Enter the book name" id="bookname"><br>
+        <span>Price     :</span> <input type="number" placeholder="price" id="bookprice"><br>
+    <input type="button" value="update book" id="update"><br>
+
+    </pre>
+    <span id="message">book content</span>
+</body>
+</html>
